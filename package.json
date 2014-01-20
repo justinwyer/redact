@@ -1,0 +1,20 @@
+{
+  "name": "featured",
+  "version": "0.0.0",
+  "description": "Build time feature toggles for browser applications",
+  "main": "featured.js",
+  "scripts": {
+    "test": "test"
+  },
+  "keywords": [
+    "feature-toggles"
+  ],
+  "author": "Justin Wyer",
+  "license": "MIT",
+  "dependencies": {
+    "acorn": "~0.4"
+  },
+  "devDependencies": {
+    "jasmine-node": "~1.13"
+  }
+}
