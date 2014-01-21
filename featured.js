@@ -1,14 +1,13 @@
 var acorn = require("acorn");
 var _ = require('lodash');
 
-var findIfStatementFeatureFlags = function(data) {
-	var recurse = function(acc, value, key, collection) {
+function collectIfStatements(data) {
+	function recurse(acc, value, key, collection) {
 		if (value.type === "IfStatement") {
-		console.log(data);
 			acc.push(value);
 			return _.foldl([value.consequent], recurse, acc);
 		} else if (_.has(value, "body")) {
-			return _.foldl(value.body, recurse, acc)
+			return _.foldl(value.body, recurse, acc);
 		} else {
 			return acc;
 		}
@@ -16,4 +15,11 @@ var findIfStatementFeatureFlags = function(data) {
 	return _.foldl([acorn.parse(data)], recurse, []);
 }
 
-exports.findIfStatementFeatureFlags = findIfStatementFeatureFlags
+function isFeatureToggle(ifStatement, toggles) {
+	return _.has(ifStatement, "test")
+		&& _.has(ifStatement.test, "property")
+		&& _.contains(_.keys(toggles), ifStatement.test.property.name);
+}
+
+exports.collectIfStatements = collectIfStatements;
+exports.isFeatureToggle = isFeatureToggle;
