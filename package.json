@@ -12,7 +12,8 @@
   "author": "Justin Wyer",
   "license": "MIT",
   "dependencies": {
-    "acorn": "~0.4"
+    "acorn": "~0.4",
+    "lodash": "~2.4"
   },
   "devDependencies": {
     "jasmine-node": "~1.13"
