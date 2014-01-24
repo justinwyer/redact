@@ -1,5 +1,5 @@
 var acorn = require("acorn");
-var featured = require("../featured");
+var featured = require("../redact");
 
 describe("is feature toggle", function () {
   it("should know an if statement may not be a feature toggle", function() {

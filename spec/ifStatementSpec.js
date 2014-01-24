@@ -1,7 +1,7 @@
 var acorn = require("acorn");
-var featured = require("../featured");
+var featured = require("../redact");
 
-describe("if statements", function () {
+describe("collectIfStatements", function () {
   it("should detect an if statement", function() {
     expect(featured.collectIfStatements(
       "if (featured.aToggle) console.log('its true');", {aToggle: true}).length).toBe(1);
@@ -26,12 +26,18 @@ describe("if statements", function () {
       {aToggle: true, anotherToggle: true})[0]).toEqual(
         {name: "aToggle", toggled: true, start: 22, end: 46});
   });
+});
 
-  describe("isIfStatement", function() {
-    it("should know a node may not be an if statement", function() {
-      var notAnIfStatement = acorn.parse(
-        "console.log('its toggled');").body[0];
-      expect(featured.isIfStatement(notAnIfStatement)).toBeFalsy();
-    });
+describe("isIfStatement", function() {
+  it("should know a node may not be an if statement", function() {
+    var notAnIfStatement = acorn.parse(
+      "console.log('its toggled');").body[0];
+    expect(featured.isIfStatement(notAnIfStatement)).toBeFalsy();
+  });
+
+  it("should know a node may be an if statement", function() {
+    var anIfStatement = acorn.parse(
+      "if (true) console.log('its toggled');").body[0];
+    expect(featured.isIfStatement(anIfStatement)).toBeTruthy();
   });
 });

@@ -1,5 +1,6 @@
 var acorn = require("acorn");
 var _ = require('lodash');
+var cheerio = require('cheerio');
 
 function collectIfStatements(data, toggles) {
   function recurse(acc, value, key, collection) {
@@ -26,7 +27,7 @@ function isFeatureToggle(ifStatement, toggles) {
          _.contains(_.keys(toggles), ifStatement.test.property.name);
 }
 
-function redact(code, features) {
+function redactJavascript(code, features) {
   var nextByte = 0;
   function recurse(redactedCode, value, index, features) {
     if (!value.toggled && value.start >= nextByte) {
@@ -39,7 +40,16 @@ function redact(code, features) {
   return _.foldl(features, recurse, "") + code.substring(nextByte, code.length);
 }
 
+function redactHtml(html, features) {
+    var $ = cheerio.load(html);
+    _.forEach(features, function(toggled, feature, collection) {
+      if (!toggled) $('[redact="' + feature + '"]').remove();
+    });
+    return $.html();
+}
+
 exports.collectIfStatements = collectIfStatements;
 exports.isFeatureToggle = isFeatureToggle;
 exports.isIfStatement = isIfStatement;
-exports.redact = redact;
+exports.redactJavascript = redactJavascript;
+exports.redactHtml = redactHtml;

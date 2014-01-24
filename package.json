@@ -1,24 +1,29 @@
 {
-  "name": "featured",
-  "version": "0.0.0",
+  "name": "redact",
+  "version": "0.0.1",
   "description": "Build time feature toggles for browser applications",
-  "main": "featured.js",
+  "main": "redact.js",
   "scripts": {
     "test": "test"
   },
   "keywords": [
-    "feature-toggles"
+    "feature-toggles",
+    "feature",
+    "toggles"
   ],
   "author": "Justin Wyer",
   "license": "MIT",
   "dependencies": {
     "acorn": "~0.4",
-    "lodash": "~2.4"
+    "lodash": "~2.4",
+    "cheerio": "~0.13.1"
   },
   "devDependencies": {
     "jasmine-node": "~1.13",
     "grunt-jasmine-node": "~0.1.0",
     "grunt": "~0.4.2",
-    "grunt-contrib-jshint": "~0.8.0"
+    "grunt-contrib-jshint": "~0.8.0",
+    "istanbul": "~0.2.4",
+    "grunt-jasmine-node-coverage": "~0.1.7"
   }
 }
