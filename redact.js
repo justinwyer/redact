@@ -37,7 +37,7 @@ function redactJavascript(code, features) {
     }
     return redactedCode;
   }
-  return _.foldl(features, recurse, "") + code.substring(nextByte, code.length);
+  return _.foldl(collectIfStatements(code, features), recurse, "") + code.substring(nextByte, code.length);
 }
 
 function redactHtml(html, features) {

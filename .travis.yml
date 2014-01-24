@@ -1,7 +1,14 @@
 language: node_js
 node_js:
-  - "0.11"
-  - "0.10"
-  - "0.8"
+  - '0.11'
+  - '0.10'
+  - '0.8'
 before_install: npm install -g grunt-cli
 install: npm install
+deploy:
+  email: justin@lifeasageek.com
+  provider: npm
+  on:
+    tags: true
+  api_key:
+    secure: RVsMr9orMhVQxfKmpHJ70P0hbv8ZSz64Hf6i4JSUNS2v+NatLmskOPgSIBYxffrLiCRyTvlQy7rDXlv1xIVrr5fC+we5lGqq3GKH6UxRTp2jgmjzDyzdXUH0SPHei4mP9iHrU+7TzM3c5xZsBCddzJZKSDARrM2EEyy5vO348PY=
