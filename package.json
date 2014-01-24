@@ -4,7 +4,7 @@
   "description": "Build time feature toggles for browser applications",
   "main": "redact.js",
   "scripts": {
-    "test": "test"
+    "test": "grunt jasmine_node"
   },
   "keywords": [
     "feature-toggles",
