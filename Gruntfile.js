@@ -1,4 +1,4 @@
-module.exports = function(grunt) {
+module.exports = function (grunt) {
   grunt.initConfig({
     jasmine_node: {
       coverage: {
@@ -6,12 +6,21 @@ module.exports = function(grunt) {
       }
     },
     jshint: {
-      all: ['spec/*.js',
-            'featured.js']
+      all: ['spec/*.js', 'featured.js']
+    },
+    watch: {
+      jasmine_node: {
+        files: ['redact.js', 'spec/**/*.js'],
+        tasks: ['jasmine_node'],
+        options: {
+          livereload: true
+        }
+      }
     }
   });
   grunt.loadNpmTasks('grunt-jasmine-node');
   grunt.loadNpmTasks('grunt-contrib-jshint');
+  grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-jasmine-node-coverage');
   grunt.registerTask('default', 'jasmine_node');
 };
