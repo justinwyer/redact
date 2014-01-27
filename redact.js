@@ -22,8 +22,10 @@ function isIfStatement(node) {
 }
 
 function isFeatureToggle(ifStatement, toggles) {
-  return _.has(ifStatement, "test") && 
+  return _.has(ifStatement, "test") &&
          _.has(ifStatement.test, "property") &&
+         _.has(ifStatement.test, "object") &&
+         ifStatement.test.object.name === 'feature' &&
          _.contains(_.keys(toggles), ifStatement.test.property.name);
 }
 
@@ -43,7 +45,7 @@ function redactJavascript(code, features) {
 function redactHtml(html, features) {
     var $ = cheerio.load(html);
     _.forEach(features, function(toggled, feature, collection) {
-      if (!toggled) $('[redact="' + feature + '"]').remove();
+      if (!toggled) $('[feature="' + feature + '"]').remove();
     });
     return $.html();
 }
