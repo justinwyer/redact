@@ -49,8 +49,16 @@ function redactHtml(html, features, keepDescriptor) {
   keepDescriptor = keepDescriptor || false;
   var $ = cheerio.load(html);
   _.forEach(features, function (toggled, feature, collection) {
-    if (!toggled) $('[feature="' + feature + '"]').remove();
+    if (toggled) {
+      $('[not-feature="' + feature + '"]').remove();
+//      if (!keepDescriptor) $('[not-feature="' + feature + '"]').attr('not-feature', null);
+    }
+    else {
+      $('[feature="' + feature + '"]').remove();
+//      if (!keepDescriptor) $('[feature="' + feature + '"]').attr('feature', null);
+    }
     if (!keepDescriptor) $('[feature="' + feature + '"]').attr('feature', null);
+    if (!keepDescriptor) $('[not-feature="' + feature + '"]').attr('not-feature', null);
   });
   return $.html();
 }
