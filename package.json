@@ -11,6 +11,14 @@
     "feature",
     "toggles"
   ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/justinwyer/redact.git"
+  },
+  "bugs": {
+    "url": "https://github.com/justinwyer/redact/issues"
+  },
+  "homepage": "https://github.com/justinwyer/redact",
   "author": "Justin Wyer",
   "license": "MIT",
   "dependencies": {
