@@ -1,6 +1,6 @@
 {
   "name": "redact",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Build time feature toggles for browser applications",
   "main": "redact.js",
   "scripts": {
