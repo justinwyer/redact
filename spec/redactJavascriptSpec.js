@@ -9,10 +9,22 @@ describe("redact javascript", function() {
         "console.log('stuff before'); if (feature.aToggle) {} // aToggle redacted\nconsole.log('more stuff');");
     });
 
+    it("should know when to remove a feature from the code and keep the descriptor when braces are used", function() {
+      var code = "console.log('stuff before');\nif (feature.aToggle) {\nconsole.log('its true');\n}\nconsole.log('more stuff');";
+      expect(redact.redactJavascript(code, {aToggle: false}, true)).toEqual(
+        "console.log('stuff before');\nif (feature.aToggle) {} // aToggle redacted\nconsole.log('more stuff');");
+    });
+
     it("should know when to remove a feature from the code and remove the descriptor", function() {
       var code = "console.log('stuff before'); if (feature.aToggle) console.log('its true'); console.log('stuff after');";
       expect(redact.redactJavascript(code, {aToggle: false}, false)).toEqual(
         "console.log('stuff before');  console.log('stuff after');");
+    });
+
+    it("should know when to remove a feature from the code and remove the descriptor when braces are used", function() {
+      var code = "console.log('stuff before');\nif (feature.aToggle) {\nconsole.log('its true');\n}\nconsole.log('stuff after');";
+      expect(redact.redactJavascript(code, {aToggle: false}, false)).toEqual(
+        "console.log('stuff before');\n\nconsole.log('stuff after');");
     });
 
     it("should know when to NOT redact code if it is not explicitly a feature toggle", function() {

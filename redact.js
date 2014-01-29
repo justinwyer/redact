@@ -2,20 +2,20 @@ var acorn = require('acorn');
 var _ = require('lodash');
 var cheerio = require('cheerio');
 
-function collectIfStatements(data, toggles) {
-  function recurse(acc, value, key, collection) {
-    if (isIfStatement(value) && isFeatureToggle(value, toggles)) {
-      acc.push({name: value.test.property.name, toggled: toggles[value.test.property.name],
-        start: value.consequent.start, end: value.consequent.end, conditional_start: value.start });
-      return _.foldl([value.consequent], recurse, acc);
-    } else if (_.has(value, "body")) {
-      return _.foldl(value.body, recurse, acc);
+function collectIfStatements(code, toggles) {
+  function addIfStatements(accumulator, node) {
+    if (isIfStatement(node) && isFeatureToggle(node, toggles)) {
+      accumulator.push({name: node.test.property.name, toggled: toggles[node.test.property.name],
+        start: node.consequent.start, end: node.consequent.end, conditional_start: node.start });
+      return _.foldl([node.consequent], addIfStatements, accumulator);
+    } else if (_.has(node, "body")) {
+      return _.foldl(node.body, addIfStatements, accumulator);
     } else {
-      return acc;
+      return accumulator;
     }
   }
 
-  return _.foldl([acorn.parse(data)], recurse, []);
+  return _.foldl([acorn.parse(code)], addIfStatements, []);
 }
 
 function isIfStatement(node) {
@@ -34,21 +34,21 @@ function redactJavascript(code, features, keepDescriptor) {
   keepDescriptor = keepDescriptor || false;
   var nextByte = 0;
 
-  function recurse(redactedCode, value, index, features) {
-    var nextToConditional = "{} // " + value.name + " redacted";
-    var beginning = value.start;
-    var newNextByte = value.end;
+  function recurse(redactedCode, toggleIfStatement) {
+    var nextToConditional = "{} // " + toggleIfStatement.name + " redacted";
+    var beginning = toggleIfStatement.start;
+    var newNextByte = toggleIfStatement.end;
 
-    if (value.toggled) {
+    if (toggleIfStatement.toggled) {
       nextToConditional = '';
-      beginning = value.conditional_start;
-      newNextByte = value.start;
+      beginning = toggleIfStatement.conditional_start;
+      newNextByte = toggleIfStatement.start;
     }
 
     if (beginning > nextByte || nextByte == 0) {
-      redactedCode += code.substring(nextByte, value.conditional_start);
+      redactedCode += code.substring(nextByte, toggleIfStatement.conditional_start);
       if (keepDescriptor) {
-        redactedCode += code.substring(value.conditional_start, value.start) + nextToConditional;
+        redactedCode += code.substring(toggleIfStatement.conditional_start, toggleIfStatement.start) + nextToConditional;
       }
       nextByte = newNextByte;
     }
@@ -62,7 +62,7 @@ function redactJavascript(code, features, keepDescriptor) {
 function redactHtml(html, features, keepDescriptor) {
   keepDescriptor = keepDescriptor || false;
   var $ = cheerio.load(html);
-  _.forEach(features, function(toggled, feature, collection) {
+  _.forEach(features, function(toggled, feature) {
     if (toggled) {
       $('[not-feature="' + feature + '"]').remove();
     }

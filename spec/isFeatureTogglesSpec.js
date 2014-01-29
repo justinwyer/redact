@@ -8,10 +8,17 @@ describe("is feature toggle", function () {
     expect(redact.isFeatureToggle(ifStatement, {})).toBeFalsy();
   });
 
-  it("should know an if statement may be a feature toggle", function() {
+  it("should know an if statement is a feature toggle", function() {
     var ifStatement = acorn.parse(
       "if (feature.someToggle) console.log('its toggled');").body[0];
     expect(redact.isFeatureToggle(ifStatement, {someToggle: true})).toBeTruthy();
+  });
+
+  it("should know an inner if statement with braces is a feature toggle", function() {
+    var outerIfStatement = acorn.parse(
+      "if (something === 'that') { if (feature.someToggle) { console.log('its toggled'); } }").body[0];
+    expect(redact.isFeatureToggle(outerIfStatement, {someToggle: true})).toBeFalsy();
+    expect(redact.isFeatureToggle(outerIfStatement.consequent.body[0], {someToggle: true})).toBeTruthy();
   });
 
   it("should know an if statement with a property with the same name as a toggle is NOT a feature toggle", function() {
