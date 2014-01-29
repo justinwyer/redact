@@ -6,7 +6,7 @@ function collectIfStatements(data, toggles) {
   function recurse(acc, value, key, collection) {
     if (isIfStatement(value) && isFeatureToggle(value, toggles)) {
       acc.push({name: value.test.property.name, toggled: toggles[value.test.property.name],
-        start: value.consequent.start, end: value.consequent.end });
+        start: value.consequent.start, end: value.consequent.end, conditional_start: value.start });
       return _.foldl([value.consequent], recurse, acc);
     } else if (_.has(value, "body")) {
       return _.foldl(value.body, recurse, acc);
@@ -30,15 +30,29 @@ function isFeatureToggle(ifStatement, toggles) {
     _.contains(_.keys(toggles), ifStatement.test.property.name);
 }
 
-function redactJavascript(code, features) {
+function redactJavascript(code, features, keepDescriptor) {
+  keepDescriptor = keepDescriptor || false;
   var nextByte = 0;
 
   function recurse(redactedCode, value, index, features) {
-    if (!value.toggled && value.start >= nextByte) {
-      redactedCode += code.substring(nextByte, value.start) +
-        "{} // " + value.name + " redacted";
-      nextByte = value.end;
+    var nextToConditional = "{} // " + value.name + " redacted";
+    var beginning = value.start;
+    var newNextByte = value.end;
+
+    if (value.toggled) {
+      nextToConditional = '';
+      beginning = value.conditional_start;
+      newNextByte = value.start;
     }
+
+    if (beginning > nextByte || nextByte == 0) {
+      redactedCode += code.substring(nextByte, value.conditional_start);
+      if (keepDescriptor) {
+        redactedCode += code.substring(value.conditional_start, value.start) + nextToConditional;
+      }
+      nextByte = newNextByte;
+    }
+
     return redactedCode;
   }
 
@@ -48,17 +62,18 @@ function redactJavascript(code, features) {
 function redactHtml(html, features, keepDescriptor) {
   keepDescriptor = keepDescriptor || false;
   var $ = cheerio.load(html);
-  _.forEach(features, function (toggled, feature, collection) {
+  _.forEach(features, function(toggled, feature, collection) {
     if (toggled) {
       $('[not-feature="' + feature + '"]').remove();
-//      if (!keepDescriptor) $('[not-feature="' + feature + '"]').attr('not-feature', null);
     }
     else {
       $('[feature="' + feature + '"]').remove();
-//      if (!keepDescriptor) $('[feature="' + feature + '"]').attr('feature', null);
     }
-    if (!keepDescriptor) $('[feature="' + feature + '"]').attr('feature', null);
-    if (!keepDescriptor) $('[not-feature="' + feature + '"]').attr('not-feature', null);
+
+    if (!keepDescriptor) {
+      $('[feature="' + feature + '"]').attr('feature', null);
+      $('[not-feature="' + feature + '"]').attr('not-feature', null);
+    }
   });
   return $.html();
 }

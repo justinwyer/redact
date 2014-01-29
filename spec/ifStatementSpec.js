@@ -1,7 +1,7 @@
 var acorn = require("acorn");
 var redact = require("../redact");
 
-describe("collectIfStatements", function () {
+describe("collectIfStatements", function() {
   it("should detect an if statement", function() {
     expect(redact.collectIfStatements(
       "if (feature.aToggle) console.log('its true');", {aToggle: true}).length).toBe(1);
@@ -10,21 +10,21 @@ describe("collectIfStatements", function () {
   it("should detect multiple if statements", function() {
     expect(redact.collectIfStatements(
       "if (feature.aToggle) console.log('its true'); " +
-      "if (feature.anotherToggle) console.log('so is this');",
+        "if (feature.anotherToggle) console.log('so is this');",
       {aToggle: true, anotherToggle: true}).length).toBe(2);
   });
 
   it("should detect a nested if statement", function() {
     expect(redact.collectIfStatements(
       "if (feature.aToggle) if (feature.anotherToggle) " +
-      "console.log('its true');", {aToggle: true, anotherToggle: true}).length).toBe(2);
+        "console.log('its true');", {aToggle: true, anotherToggle: true}).length).toBe(2);
   });
 
-  it("should report the start and end bytes of the consequent", function() {
+  it("should report the start and end bytes of the consequent and the start and end bytes of the conditional", function() {
     expect(redact.collectIfStatements(
-      "if (feature.aToggle) console.log('its true');",
+      "console.log('something'); if (feature.aToggle) console.log('its true');",
       {aToggle: true, anotherToggle: true})[0]).toEqual(
-        {name: "aToggle", toggled: true, start: 21, end: 45});
+      {name: "aToggle", toggled: true, start: 47, end: 71, conditional_start: 26});
   });
 });
 
