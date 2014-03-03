@@ -67,5 +67,11 @@ describe("redact javascript", function() {
       var code = "if (feature.aToggle) if (feature.anotherToggle) console.log('its true');";
       expect(redact.redactJavascript(code, {aToggle: false, anotherToggle: true}, false)).toEqual('');
     });
+
+    it("should know how to remove a wrapped feature", function() {
+      var code = "(function () { if (feature.aToggle) console.log('its true'); })();";
+      expect(redact.redactJavascript(code, {aToggle: false}, false)).toEqual(
+        "(function () {  })();");
+    });
   });
 });

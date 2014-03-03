@@ -8,8 +8,14 @@ function collectIfStatements(code, toggles) {
       accumulator.push({name: node.test.property.name, toggled: toggles[node.test.property.name],
         start: node.consequent.start, end: node.consequent.end, conditional_start: node.start });
       return _.foldl([node.consequent], addIfStatements, accumulator);
-    } else if (_.has(node, "body")) {
+    } else if (_.has(node, "body") && _.isArray(node.body)) {
       return _.foldl(node.body, addIfStatements, accumulator);
+    } else if (_.has(node, "body") && !_.isArray(node.body)) {
+      return _.foldl([node.body], addIfStatements, accumulator);
+    } else if (_.has(node, "callee")) {
+      return _.foldl([node.callee], addIfStatements, accumulator);
+    } else if (_.has(node, "expression")) {
+      return _.foldl([node.expression], addIfStatements, accumulator);
     } else {
       return accumulator;
     }

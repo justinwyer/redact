@@ -32,6 +32,11 @@ describe("collectIfStatements", function() {
       {aToggle: true, anotherToggle: true})[0]).toEqual(
       {name: "aToggle", toggled: true, start: 47, end: 71, conditional_start: 26});
   });
+
+  it("should detect wrapped if statement", function() {
+    expect(redact.collectIfStatements(
+      "(function () { if (feature.aToggle) console.log('its true'); })();", {aToggle: true}).length).toBe(1);
+  });
 });
 
 describe("isIfStatement", function() {
